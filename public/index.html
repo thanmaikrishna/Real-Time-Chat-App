@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Chat App - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-container">
+    <div class="auth-box">
+        <div class="auth-header">
+            <h1>💬 ChatHub</h1>
+            <p>Real-Time Messaging Platform</p>
+        </div>
+
+        <div id="loginForm" class="auth-form">
+            <h2>Login</h2>
+            <input id="username" placeholder="Username" class="auth-input">
+            <input id="password" placeholder="Password" type="password" class="auth-input">
+            <button onclick="login()" class="auth-button">Login</button>
+            <p class="form-toggle">Don't have an account? <a onclick="toggleForm()">Sign Up</a></p>
+            <p class="form-toggle"><a onclick="showForgotPassword()" style="color: #667eea; cursor: pointer;">Forgot Password?</a></p>
+        </div>
+
+        <div id="forgotPasswordForm" class="auth-form" style="display:none;">
+            <h2>Reset Password</h2>
+            <input id="resetUsername" placeholder="Enter your username" class="auth-input">
+            <input id="resetEmail" placeholder="Enter your email" class="auth-input">
+            <button onclick="resetPassword()" class="auth-button">Send Reset Link</button>
+            <p class="form-toggle"><a onclick="hideForgotPassword()" style="color: #667eea; cursor: pointer;">Back to Login</a></p>
+        </div>
+
+        <div id="signupForm" class="auth-form" style="display:none;">
+            <h2>Sign Up</h2>
+            <input id="signupUsername" placeholder="Username" class="auth-input">
+            <input id="signupPassword" placeholder="Password" type="password" class="auth-input">
+            <input id="signupPassword2" placeholder="Confirm Password" type="password" class="auth-input">
+            
+            <h4>Select Interests</h4>
+            <div class="interests-grid">
+                <label><input type="checkbox" value="anime"> Anime</label>
+                <label><input type="checkbox" value="sports"> Sports</label>
+                <label><input type="checkbox" value="gaming"> Gaming</label>
+                <label><input type="checkbox" value="music"> Music</label>
+                <label><input type="checkbox" value="tech"> Tech</label>
+                <label><input type="checkbox" value="movies"> Movies</label>
+            </div>
+            
+            <button onclick="signup()" class="auth-button">Sign Up</button>
+            <p class="form-toggle">Already have an account? <a onclick="toggleForm()">Login</a></p>
+        </div>
+
+        <div id="errorMsg" class="error-message"></div>
+    </div>
+</div>
+
+<script>
+function toggleForm() {
+    document.getElementById("loginForm").style.display = 
+        document.getElementById("loginForm").style.display === "none" ? "block" : "none";
+    document.getElementById("signupForm").style.display = 
+        document.getElementById("signupForm").style.display === "none" ? "block" : "none";
+    document.getElementById("errorMsg").textContent = "";
+}
+
+function showError(message) {
+    document.getElementById("errorMsg").textContent = message;
+}
+
+function showForgotPassword() {
+    document.getElementById("loginForm").style.display = "none";
+    document.getElementById("signupForm").style.display = "none";
+    document.getElementById("forgotPasswordForm").style.display = "block";
+    document.getElementById("errorMsg").textContent = "";
+}
+
+function hideForgotPassword() {
+    document.getElementById("loginForm").style.display = "block";
+    document.getElementById("signupForm").style.display = "none";
+    document.getElementById("forgotPasswordForm").style.display = "none";
+    document.getElementById("errorMsg").textContent = "";
+}
+
+function resetPassword() {
+    const username = document.getElementById("resetUsername").value;
+    const email = document.getElementById("resetEmail").value;
+
+    if (!username || !email) {
+        showError("Please fill in all fields");
+        return;
+    }
+
+    // Check if username exists
+    const savedUsername = localStorage.getItem("savedUsername_" + username);
+    if (!savedUsername) {
+        showError("Username not found");
+        return;
+    }
+
+    // Simulate password reset (in production, send email)
+    const errorMsg = document.getElementById("errorMsg");
+    errorMsg.innerHTML = `✓ Password reset link sent to ${email}<br><br>
+        For demo: Your temporary password is 'temp123'<br>
+        Use it to login, then change password in settings.<br><br>
+        Redirecting to login...`;
+    errorMsg.style.color = "#28a745";
+    
+    setTimeout(() => {
+        hideForgotPassword();
+        document.getElementById("errorMsg").style.color = "#dc3545";
+        document.getElementById("errorMsg").textContent = "";
+    }, 3000);
+}
+
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    if (!username || !password) {
+        showError("Please fill in all fields");
+        return;
+    }
+
+    // Check if user exists (has saved rooms in localStorage)
+    const savedUsername = localStorage.getItem("savedUsername_" + username);
+    const savedRooms = localStorage.getItem("savedRooms_" + username);
+    
+    if (savedUsername) {
+        // User exists - load their saved rooms
+        sessionStorage.setItem("username", username);
+        sessionStorage.setItem("userId", savedUsername); // Use same ID as before
+        sessionStorage.setItem("rooms", savedRooms || JSON.stringify(["general", "random"]));
+    } else {
+        // First time login - create new user
+        const userId = "user_" + username + "_" + Math.random().toString(36).substr(2, 9);
+        sessionStorage.setItem("username", username);
+        sessionStorage.setItem("userId", userId);
+        sessionStorage.setItem("rooms", JSON.stringify(["general", "random"]));
+        localStorage.setItem("savedUsername_" + username, userId);
+        localStorage.setItem("savedRooms_" + username, JSON.stringify(["general", "random"]));
+    }
+    // No cross-tab identity sharing; use sessionStorage for per-tab session
+    window.location.href = "chat.html";
+}
+
+function signup() {
+    const username = document.getElementById("signupUsername").value;
+    const password = document.getElementById("signupPassword").value;
+    const password2 = document.getElementById("signupPassword2").value;
+
+    if (!username || !password || !password2) {
+        showError("Please fill in all fields");
+        return;
+    }
+
+    if (password !== password2) {
+        showError("Passwords do not match");
+        return;
+    }
+
+    if (password.length < 6) {
+        showError("Password must be at least 6 characters");
+        return;
+    }
+
+    // Check if username already exists
+    const existingUsername = localStorage.getItem("savedUsername_" + username);
+    if (existingUsername) {
+        // Allow re-signup - user can update their interests
+        console.log("Re-signup for existing user:", username);
+        // Continue with signup (will overwrite existing data)
+    }
+
+    const checkboxes = document.querySelectorAll("#signupForm input[type=checkbox]:checked");
+    const interests = Array.from(checkboxes).map(cb => cb.value);
+
+    if (interests.length === 0) {
+        showError("Please select at least one interest");
+        return;
+    }
+
+    // Create new user with persistent ID
+    const userId = "user_" + username + "_" + Math.random().toString(36).substr(2, 9);
+    
+    sessionStorage.setItem("username", username);
+    sessionStorage.setItem("userId", userId);
+    sessionStorage.setItem("rooms", JSON.stringify(interests));
+    
+    // Save for future login
+    localStorage.setItem("savedUsername_" + username, userId);
+    localStorage.setItem("savedRooms_" + username, JSON.stringify(interests));
+    localStorage.setItem("password_" + username, password); // In production, use backend
+    
+    window.location.href = "chat.html";
+}
+
+// Allow Enter key to submit
+document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        if (document.getElementById("loginForm").style.display !== "none") {
+            login();
+        } else {
+            signup();
+        }
+    }
+});
+</script>
+
+</body>
+</html>

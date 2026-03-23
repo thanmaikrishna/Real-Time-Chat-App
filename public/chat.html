@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - ChatHub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="chat-body">
+
+<div class="chat-container">
+
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+        <div class="sidebar-header">
+            <h2>💬 ChatHub</h2>
+        </div>
+
+        <!-- Rooms Section -->
+        <div class="sidebar-section">
+            <h4>Interest Rooms</h4>
+            <ul id="roomList" class="room-list"></ul>
+        </div>
+
+        <div class="sidebar-section">
+            <h4>Direct Message</h4>
+            <div class="private-chat-input">
+                <input id="privateUser" placeholder="Username..." class="private-input">
+                <button onclick="startPrivate()" class="private-btn">Chat</button>
+            </div>
+            <ul id="privateChats" class="private-list"></ul>
+        </div>
+    </div>
+
+    <!-- Main Chat Area -->
+    <div class="chat-main">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="header-left">
+                <h3 id="chatTitle">Welcome</h3>
+                <p id="chatInfo" class="chat-info"></p>
+            </div>
+            <div class="header-center">
+                <input id="globalSearch" class="header-search" type="search" placeholder="Search rooms or contacts..." oninput="filterContactsRooms()" />
+            </div>
+            <div class="header-right">
+                <div class="header-actions">
+                    <button class="action-btn" onclick="startCall()">📞</button>
+                    <button class="action-btn" onclick="startVideoCall()">🎥</button>
+                    <button class="action-btn" onclick="showSettings()">⚙️</button>
+                </div>
+                <div class="user-profile" onclick="toggleProfileMenu()">
+                    <div class="user-profile-avatar">
+                        <span id="userAvatar"></span>
+                    </div>
+                    <span class="user-profile-name" id="currentUsername"></span>
+                    <span class="profile-arrow">▼</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">Log Out</button>
+                <div id="profileMenu" class="profile-menu" style="display: none;">
+                    <div class="profile-menu-item" onclick="showProfileSettings()">👤 My Account</div>
+                    <div class="profile-menu-item" onclick="showPrivacySettings()">🔒 Privacy & Safety</div>
+                    <div class="profile-menu-item" onclick="showNotifications()">🔔 Notifications</div>
+                    <div class="profile-menu-item" onclick="showHelp()">❓ Help Center</div>
+                    <div class="profile-menu-item" onclick="showSettings()">⚙️ User Settings</div>
+                    <div class="profile-menu-item logout-option" onclick="logout()">Log Out</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="messages-container" id="messagesContainer">
+            <div class="welcome-message">
+                <h2>Welcome to ChatHub! 👋</h2>
+                <p>Select a room or user to start messaging</p>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div id="typingIndicator" class="typing-indicator" style="display: none;">
+            <span></span><span></span><span></span>
+            <small id="typingUser"></small>
+        </div>
+
+        <!-- Settings Panel -->
+        <div id="settingsPanel" class="settings-panel" style="display:none;">
+            <div class="settings-tabs">
+                <button class="settings-tab active" onclick="openSettingsTab('chatSettings')">Chat</button>
+                <button class="settings-tab" onclick="openSettingsTab('otherSettings')">Other</button>
+            </div>
+            <div id="chatSettings" class="settings-content">
+                <h4>Chat Settings</h4>
+                <label><input type="checkbox" id="enableTyping" checked> Show typing indicator</label><br>
+                <label><input type="checkbox" id="showTimestamps" checked> Show message timestamps</label><br>
+                <label><input type="checkbox" id="messageSound" checked> Enable message sound</label>
+            </div>
+            <div id="otherSettings" class="settings-content" style="display:none;">
+                <h4>Other Settings</h4>
+                <label><input type="checkbox" id="darkMode"> Enable dark mode</label><br>
+                <label><input type="checkbox" id="notifications" checked> Allow desktop notifications</label><br>
+            </div>
+            <div class="settings-footer">
+                <button onclick="saveSettings()" class="send-btn">Save</button>
+                <button onclick="closeSettings()" class="private-btn">Close</button>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="input-area">
+            <button class="media-btn" onclick="triggerShareMedia()">📎</button>
+            <input id="messageInput" placeholder="Type a message..." class="message-input">
+            <button onclick="sendMessage()" class="send-btn">Send</button>
+        </div>
+    </div>
+
+</div>
+
+<input type="file" id="mediaInput" accept="image/*,video/*,audio/*" style="display:none;" onchange="handleMediaSelection(event)">
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
