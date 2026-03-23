@@ -1,0 +1,43 @@
+# ======================
+# Node.js
+# ======================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ======================
+# Environment Variables
+# ======================
+.env
+
+# ======================
+# Database Files (IMPORTANT)
+# ======================
+*.db
+*.sqlite
+*.sqlite3
+
+# ======================
+# Logs
+# ======================
+logs/
+*.log
+
+# ======================
+# OS Files
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# Editor Settings
+# ======================
+.vscode/
+.idea/
+
+# ======================
+# Optional Build Files
+# ======================
+dist/
+build/
