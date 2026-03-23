@@ -1,10 +1,10 @@
+
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const path = require("path");
 const fs = require("fs");
-const Database = require("sqlite3").verbose();
-
+const sqlite3 = require("sqlite3").verbose();
 const app = express();
 app.use(express.json());
 const server = http.createServer(app);
@@ -26,14 +26,17 @@ let allUsers = new Set(); // known user list for DM exists check
 let offlineMessages = {}; // username -> pending message array
 
 // SQLite database for persistent chat storage
-const db = new Database(path.join(__dirname, "chat_database.db"), (err) => {
-    if (err) {
-        console.error("Failed to open database:", err);
-    } else {
-        console.log("Connected to SQLite database");
-        initializeDatabase();
+const db = new sqlite3.Database(
+    path.join(__dirname, "chat_database.db"),
+    (err) => {
+        if (err) {
+            console.error("Failed to open database:", err);
+        } else {
+            console.log("Connected to SQLite database");
+            initializeDatabase();
+        }
     }
-});
+);
 
 function initializeDatabase() {
     db.serialize(() => {
